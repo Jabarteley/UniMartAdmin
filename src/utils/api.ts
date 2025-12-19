@@ -10,14 +10,23 @@ export const apiCall = async (
   includeAuth: boolean = true
 ) => {
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
+  // Create a new Headers object, normalizing options.headers
+  const headers = new Headers(options.headers);
+
+  // Set default and auth headers. This will overwrite if already present.
+  headers.set('Content-Type', 'application/json');
+
+  if (includeAuth) {
+    const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+    if (token) {
+      headers.set('x-auth-token', token);
+    }
+  }
+
   const config: RequestInit = {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(includeAuth && { 'x-auth-token': localStorage.getItem('adminToken') || '' }),
-      ...options.headers,
-    },
+    headers, // Use the new Headers object
   };
 
   const response = await fetch(url, config);

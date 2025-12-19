@@ -1,3 +1,9 @@
+export interface UserSnippet {
+  _id: string;
+  name: string;
+  email: string;
+}
+
 /* ======================================================
    USER-RELATED INTERFACES
    ====================================================== */
@@ -81,7 +87,7 @@ export interface Listing {
 
   images: string[];
 
-  seller: string;
+  seller: string | UserSnippet; // Updated to allow populated seller
 
   status: 'ACTIVE' | 'PENDING' | 'SUSPENDED' | 'SOLD';
 

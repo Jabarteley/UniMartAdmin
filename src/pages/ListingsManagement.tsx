@@ -459,7 +459,7 @@ const ListingsManagement: React.FC = () => {
                         ₦{listing.price.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {listing.seller}
+                        {typeof listing.seller === 'object' ? listing.seller.name : listing.seller}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
