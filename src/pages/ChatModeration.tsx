@@ -47,44 +47,18 @@ const ChatModeration: React.FC = () => {
       };
 
       // Note: In a real implementation, we would have an API call for reported chats
-      // For now, we'll simulate the data
-      const mockData: ReportedChat[] = [
-        {
-          id: '1',
-          chatId: 'chat1',
-          reportedUsers: ['user1', 'user2'],
-          messages: [
-            {
-              id: 'msg1',
-              chatId: 'chat1',
-              senderId: 'user1',
-              message: 'Hello, are you interested in the item?',
-              read: true,
-              sentAt: '2023-10-15T10:00:00Z'
-            },
-            {
-              id: 'msg2',
-              chatId: 'chat1',
-              senderId: 'user2',
-              message: 'Yes, I am. Can I see it?',
-              read: true,
-              sentAt: '2023-10-15T10:05:00Z'
-            }
-          ],
-          reportType: 'Harassment',
-          reportReason: 'User was sending inappropriate messages',
-          reportDate: '2023-10-16T09:00:00Z',
-          status: 'PENDING',
-          listingId: 'listing1',
-          buyerId: 'user1',
-          sellerId: 'user2'
-        }
-      ];
-      
-      setReportedChats(mockData);
-      setFilteredChats(mockData);
-      setTotalChats(mockData.length);
+      // const response = await chatAPI.getReportedChats(filters);
+      // if (response && response.data) {
+      //   setReportedChats(response.data);
+      //   setFilteredChats(response.data);
+      //   setTotalChats(response.total || 0);
+      //   setTotalPages(response.pages || 1);
+      // } else {
+      setReportedChats([]);
+      setFilteredChats([]);
+      setTotalChats(0);
       setTotalPages(1);
+      // }
     } catch (error) {
       console.error('Error fetching reported chats:', error);
     } finally {

@@ -19,17 +19,34 @@ export const dashboardAPI = {
         activeListings: analytics.activeListings || 0,
         completedDeals: analytics.completedDeals || 0,
         reportedIssues: analytics.reportedIssues || 0,
-        bannedUsers: analytics.bannedUsers || 0
+        bannedUsers: analytics.bannedUsers || 0,
+        generalUsers: analytics.generalUsers || 0,
+        sellers: analytics.sellers || 0,
+        premiumSellers: analytics.premiumSellers || 0,
+        pendingListings: analytics.pendingListings || 0,
+        suspendedListings: analytics.suspendedListings || 0,
+        pendingVerifications: analytics.pendingVerifications || 0,
+        trustScoreAverage: analytics.trustScoreAverage || 0,
+        activeChats: analytics.activeChats || 0
       };
     } else {
       // Handle flattened structure
+      const analytics = data.analytics || data;
       return {
-        totalUsers: data.totalUsers || data.analytics?.totalUsers || 0,
-        verifiedUsers: data.verifiedUsers || data.analytics?.verifiedUsers || 0,
-        activeListings: data.activeListings || data.analytics?.activeListings || 0,
-        completedDeals: data.completedDeals || data.analytics?.completedDeals || 0,
-        reportedIssues: data.reportedIssues || data.analytics?.reportedIssues || 0,
-        bannedUsers: data.bannedUsers || data.analytics?.bannedUsers || 0
+        totalUsers: analytics.totalUsers || 0,
+        verifiedUsers: analytics.verifiedUsers || 0,
+        activeListings: analytics.activeListings || 0,
+        completedDeals: analytics.completedDeals || 0,
+        reportedIssues: analytics.reportedIssues || 0,
+        bannedUsers: analytics.bannedUsers || 0,
+        generalUsers: analytics.generalUsers || 0,
+        sellers: analytics.sellers || 0,
+        premiumSellers: analytics.premiumSellers || 0,
+        pendingListings: analytics.pendingListings || 0,
+        suspendedListings: analytics.suspendedListings || 0,
+        pendingVerifications: analytics.pendingVerifications || 0,
+        trustScoreAverage: analytics.trustScoreAverage || 0,
+        activeChats: analytics.activeChats || 0
       };
     }
   },

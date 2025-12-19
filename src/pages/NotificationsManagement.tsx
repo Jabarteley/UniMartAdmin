@@ -422,9 +422,6 @@ const NotificationsManagement: React.FC = () => {
                             onChange={(e) => setNewNotification({...newNotification, campus: e.target.value})}
                           >
                             <option value="">Select Campus</option>
-                            <option value="University of Technology">University of Technology</option>
-                            <option value="State College">State College</option>
-                            <option value="University of Arts">University of Arts</option>
                           </select>
                         </div>
                       )}
@@ -442,12 +439,6 @@ const NotificationsManagement: React.FC = () => {
                             onChange={(e) => setNewNotification({...newNotification, category: e.target.value})}
                           >
                             <option value="">Select Category</option>
-                            <option value="Electronics">Electronics</option>
-                            <option value="Textbooks">Textbooks</option>
-                            <option value="Furniture">Furniture</option>
-                            <option value="Clothing">Clothing</option>
-                            <option value="Dorm Essentials">Dorm Essentials</option>
-                            <option value="Appliances">Appliances</option>
                           </select>
                         </div>
                       )}

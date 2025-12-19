@@ -85,50 +85,23 @@ const Dashboard: React.FC = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      // In a real implementation, we would fetch from the API
-      // const response = await dashboardAPI.getDashboardStats();
-      // if (response) {
-      //   setStats(response);
-      // }
       
-      // For now, using mock data
-      setStats({
-        totalUsers: 1245,
-        verifiedUsers: 987,
-        activeListings: 892,
-        completedDeals: 634,
-        reportedIssues: 23,
-        bannedUsers: 5,
-        generalUsers: 821,
-        sellers: 342,
-        premiumSellers: 82,
-        pendingListings: 45,
-        suspendedListings: 12,
-        pendingVerifications: 18,
-        trustScoreAverage: 78.5,
-        activeChats: 1205
-      });
-
-      // Mock data for charts
-      setDealsPerDayData([
-        { day: 'Mon', deals: 45 },
-        { day: 'Tue', deals: 52 },
-        { day: 'Wed', deals: 38 },
-        { day: 'Thu', deals: 61 },
-        { day: 'Fri', deals: 58 },
-        { day: 'Sat', deals: 72 },
-        { day: 'Sun', deals: 49 }
+      const [statsData, dealsData, categoryDataResult] = await Promise.all([
+        dashboardAPI.getDashboardStats(),
+        dashboardAPI.getDealsPerDay(),
+        dashboardAPI.getListingByCategory()
       ]);
 
-      setCategoryData([
-        { name: 'Electronics', listings: 210 },
-        { name: 'Textbooks', listings: 185 },
-        { name: 'Furniture', listings: 142 },
-        { name: 'Clothing', listings: 98 },
-        { name: 'Appliances', listings: 87 },
-        { name: 'Bikes', listings: 65 },
-        { name: 'Other', listings: 105 }
-      ]);
+      if (statsData) {
+        setStats(statsData);
+      }
+      if (dealsData) {
+        setDealsPerDayData(dealsData);
+      }
+      if (categoryDataResult) {
+        setCategoryData(categoryDataResult);
+      }
+
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {

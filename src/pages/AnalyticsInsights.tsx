@@ -147,7 +147,7 @@ const AnalyticsInsights: React.FC = () => {
           <div className="bg-white p-6 shadow rounded-lg">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Deals per Day</h3>
             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
                 <BarChart
                   data={analyticsData.dealsPerDay || []}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
@@ -167,7 +167,7 @@ const AnalyticsInsights: React.FC = () => {
           <div className="bg-white p-6 shadow rounded-lg">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Conversion Rate</h3>
             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
                 <LineChart
                   data={analyticsData.conversionRate || []}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
@@ -193,7 +193,7 @@ const AnalyticsInsights: React.FC = () => {
           <div className="bg-white p-6 shadow rounded-lg lg:col-span-2">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Listings by Category</h3>
             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
                 <PieChart>
                   <Pie
                     data={analyticsData.listingsByCategory || []}
@@ -221,7 +221,7 @@ const AnalyticsInsights: React.FC = () => {
           <div className="bg-white p-6 shadow rounded-lg">
             <h3 className="text-lg font-medium text-gray-900 mb-4">User Retention</h3>
             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
                 <BarChart
                   data={analyticsData.userRetention || []}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
@@ -241,7 +241,7 @@ const AnalyticsInsights: React.FC = () => {
           <div className="bg-white p-6 shadow rounded-lg">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Scam Reports Trend</h3>
             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
                 <LineChart
                   data={analyticsData.scamReportsTrend || []}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
