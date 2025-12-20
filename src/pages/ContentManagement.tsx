@@ -23,11 +23,19 @@ interface HomePageContent {
   updatedAt: string;
 }
 
+interface Promotion {
+  id: string;
+  title: string;
+  content: string;
+  status: 'Active' | 'Inactive';
+}
+
 const ContentManagement: React.FC = () => {
   const { adminUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'banners' | 'homePage' | 'promotions'>('banners');
   const [banners, setBanners] = useState<Banner[]>([]);
   const [homePageContent, setHomePageContent] = useState<HomePageContent[]>([]);
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBannerModal, setShowBannerModal] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
@@ -54,6 +62,13 @@ const ContentManagement: React.FC = () => {
       if (homePageResponse && homePageResponse.data) {
         setHomePageContent(homePageResponse.data);
       }
+
+      // Fetch promotions
+      const promotionsResponse = await cmsAPI.getPromotions();
+      if (promotionsResponse && promotionsResponse.data) {
+        setPromotions(promotionsResponse.data);
+      }
+
     } catch (error) {
       console.error('Error fetching content:', error);
     } finally {
@@ -201,8 +216,8 @@ const ContentManagement: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {banners.map((banner, index) => (
-                <div key={banner.id || `banner-${index}`} className="bg-white overflow-hidden shadow rounded-lg">
+              {banners.map((banner) => (
+                <div key={banner.id} className="bg-white overflow-hidden shadow rounded-lg">
                   <div className="px-4 py-5 sm:p-6">
                     {banner.imageUrl && (
                       <div className="mb-4">
@@ -251,8 +266,8 @@ const ContentManagement: React.FC = () => {
           <div className="mt-6">
             <h3 className="text-lg font-medium text-gray-900 mb-6">Home Page Content</h3>
             <div className="grid grid-cols-1 gap-6">
-              {homePageContent.map((content, index) => (
-                <div key={content.id || `content-${index}`} className="bg-white shadow overflow-hidden rounded-md p-6">
+              {homePageContent.map((content) => (
+                <div key={content.id} className="bg-white shadow overflow-hidden rounded-md p-6">
                   <div className="flex justify-between">
                     <h4 className="text-md font-medium text-gray-900 capitalize">{content.section.replace('-', ' ')}</h4>
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -314,30 +329,36 @@ const ContentManagement: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {/* Promotional messages would be listed here */}
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Welcome Back!
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                      Special discounts for returning students this semester
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        Active
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => {}} // Edit functionality would go here
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        Edit
-                      </button>
-                    </td>
-                  </tr>
+                  {promotions.map((promo) => (
+                    <tr key={promo.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {promo.title}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                        {promo.content}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${promo.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                          {promo.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() => {}} // Edit functionality would go here
+                          className="text-indigo-600 hover:text-indigo-900"
+                        >
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
+               {promotions.length === 0 && (
+                <div className="text-center py-10">
+                  <p className="text-gray-500">No promotions found</p>
+                </div>
+              )}
             </div>
           </div>
         )}

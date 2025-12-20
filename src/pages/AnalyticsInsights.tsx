@@ -1,41 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import MainLayout from '../components/MainLayout';
 import { analyticsAPI } from '../services/analyticsService';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const AnalyticsInsights: React.FC = () => {
   const { adminUser } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [analyticsData, setAnalyticsData] = useState<any>({});
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter'>('month');
 
   // Fetch analytics data from API
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       setLoading(true);
       
       // Get system analytics
       const systemAnalytics = await analyticsAPI.getSystemAnalytics();
-      if (systemAnalytics) {
-        setAnalyticsData(systemAnalytics);
+      if (systemAnalytics && systemAnalytics.analytics) {
+        setAnalyticsData(systemAnalytics.analytics);
       }
     } catch (error) {
       console.error('Error fetching analytics:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAnalytics();
-  }, [timeRange]);
+  }, [fetchAnalytics, timeRange]);
 
   if (!adminUser) {
     return <div>Not authenticated</div>;
   }
 
-  if (loading) {
+  if (loading || !analyticsData) {
     return (
       <MainLayout>
         <div className="flex justify-center items-center h-64">
@@ -46,7 +46,6 @@ const AnalyticsInsights: React.FC = () => {
   }
 
   // Colors for charts
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
   const ANALYTICS_COLORS = ['#4f46e5', '#22c55e', '#ef4444', '#f97316', '#8b5cf6', '#ec4899'];
 
   return (
@@ -143,125 +142,55 @@ const AnalyticsInsights: React.FC = () => {
 
         {/* Charts Section */}
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* Deals per Day Chart */}
-          <div className="bg-white p-6 shadow rounded-lg">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Deals per Day</h3>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-                <BarChart
-                  data={analyticsData.dealsPerDay || []}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="count" name="Number of Deals" fill="#3b82f6" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Conversion Rate Chart */}
-          <div className="bg-white p-6 shadow rounded-lg">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Conversion Rate</h3>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-                <LineChart
-                  data={analyticsData.conversionRate || []}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis unit="%" />
-                  <Tooltip />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="rate" 
-                    name="Conversion Rate" 
-                    stroke="#10b981" 
-                    activeDot={{ r: 8 }} 
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Listings by Category Chart */}
-          <div className="bg-white p-6 shadow rounded-lg lg:col-span-2">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Listings by Category</h3>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-                <PieChart>
-                  <Pie
-                    data={analyticsData.listingsByCategory || []}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="count"
-                    nameKey="name"
-                    label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`}
+          {analyticsData.charts?.dealsPerDay && (
+            <div className="bg-white p-6 shadow rounded-lg">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Deals per Day</h3>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={analyticsData.charts.dealsPerDay}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                   >
-                    {analyticsData.listingsByCategory?.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={ANALYTICS_COLORS[index % ANALYTICS_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="day" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="count" name="Number of Deals" fill="#3b82f6" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* User Retention Chart */}
-          <div className="bg-white p-6 shadow rounded-lg">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">User Retention</h3>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-                <BarChart
-                  data={analyticsData.userRetention || []}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="period" />
-                  <YAxis unit="%" />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="retentionRate" name="Retention Rate" fill="#8b5cf6" />
-                </BarChart>
-              </ResponsiveContainer>
+          {analyticsData.charts?.listingsByCategory && (
+            <div className="bg-white p-6 shadow rounded-lg lg:col-span-2">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Listings by Category</h3>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={analyticsData.charts.listingsByCategory}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="count"
+                      nameKey="name"
+                      label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`}
+                    >
+                      {analyticsData.charts.listingsByCategory.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={ANALYTICS_COLORS[index % ANALYTICS_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-          </div>
-
-          {/* Scam Reports Trend */}
-          <div className="bg-white p-6 shadow rounded-lg">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Scam Reports Trend</h3>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-                <LineChart
-                  data={analyticsData.scamReportsTrend || []}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="count" 
-                    name="Reports" 
-                    stroke="#ef4444" 
-                    activeDot={{ r: 8 }} 
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Export Section */}

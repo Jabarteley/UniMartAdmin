@@ -424,7 +424,7 @@ const VerificationManagement: React.FC = () => {
                     const pageNum = Math.min(totalPages, Math.max(1, currentPage - 2)) + i;
                     return (
                       <button
-                        key={pageNum}
+                        key={`page-${pageNum}-${i}`}
                         onClick={() => setCurrentPage(pageNum)}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           currentPage === pageNum
