@@ -384,8 +384,8 @@ const UserManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredUsers.map((user) => (
-                <tr key={user.id}>
+              {filteredUsers.map((user, index) => (
+                <tr key={user.id || index}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
@@ -538,7 +538,7 @@ const UserManagement: React.FC = () => {
                     const pageNum = Math.min(totalPages, Math.max(1, currentPage - 2)) + i;
                     return (
                       <button
-                        key={pageNum}
+                        key={`page-${pageNum}-${i}`}
                         onClick={() => setCurrentPage(pageNum)}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           currentPage === pageNum

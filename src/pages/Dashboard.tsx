@@ -40,6 +40,20 @@ const Dashboard: React.FC = () => {
         ...prev,
         completedDeals: prev.completedDeals + 1
       }));
+
+      // Update deals per day chart
+      const today = new Date().toISOString().split('T')[0];
+      setDealsPerDayData(prev => {
+        const existingDay = prev.find(item => item.day === today);
+        if (existingDay) {
+          return prev.map(item =>
+            item.day === today ? { ...item, deals: item.deals + 1 } : item
+          );
+        } else {
+          return [...prev, { day: today, deals: 1 }];
+        }
+      });
+
       addNotification(`New deal completed: ${data.itemTitle}`);
     };
 
@@ -48,6 +62,19 @@ const Dashboard: React.FC = () => {
         ...prev,
         activeListings: prev.activeListings + 1
       }));
+
+      // Update category chart
+      setCategoryData(prev => {
+        const existingCategory = prev.find(item => item.name === data.category);
+        if (existingCategory) {
+          return prev.map(item =>
+            item.name === data.category ? { ...item, listings: item.listings + 1 } : item
+          );
+        } else {
+          return [...prev, { name: data.category, listings: 1 }];
+        }
+      });
+
       addNotification(`New listing created: ${data.title}`);
     };
 

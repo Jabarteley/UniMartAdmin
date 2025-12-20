@@ -9,29 +9,8 @@ export const dashboardAPI = {
 
     const data = await response.json();
 
-    // Handle different possible response structures
-    if (data.data && data.data.analytics) {
-      // Handle structure where analytics is nested under data
-      const analytics = data.data.analytics;
-      return {
-        totalUsers: analytics.totalUsers || 0,
-        verifiedUsers: analytics.verifiedUsers || 0,
-        activeListings: analytics.activeListings || 0,
-        completedDeals: analytics.completedDeals || 0,
-        reportedIssues: analytics.reportedIssues || 0,
-        bannedUsers: analytics.bannedUsers || 0,
-        generalUsers: analytics.generalUsers || 0,
-        sellers: analytics.sellers || 0,
-        premiumSellers: analytics.premiumSellers || 0,
-        pendingListings: analytics.pendingListings || 0,
-        suspendedListings: analytics.suspendedListings || 0,
-        pendingVerifications: analytics.pendingVerifications || 0,
-        trustScoreAverage: analytics.trustScoreAverage || 0,
-        activeChats: analytics.activeChats || 0
-      };
-    } else {
-      // Handle flattened structure
-      const analytics = data.analytics || data;
+    if (data.analytics) {
+      const analytics = data.analytics;
       return {
         totalUsers: analytics.totalUsers || 0,
         verifiedUsers: analytics.verifiedUsers || 0,
@@ -49,6 +28,8 @@ export const dashboardAPI = {
         activeChats: analytics.activeChats || 0
       };
     }
+    
+    return null;
   },
 
   // Get deals per day for the last 7 days
@@ -58,16 +39,11 @@ export const dashboardAPI = {
 
     const data = await response.json();
 
-    if (data.data && data.data.dealsPerDay) {
-      return data.data.dealsPerDay;
-    } else if (data.dealsPerDay) {
-      return data.dealsPerDay;
-    } else if (data.data && data.data.analytics && data.data.analytics.charts) {
-      return data.data.analytics.charts.dealsPerDay || [];
-    } else {
-      // Default to empty array if no matching structure found
-      return [];
+    if (data.analytics && data.analytics.charts) {
+      return data.analytics.charts.dealsPerDay || [];
     }
+    
+    return [];
   },
 
   // Get listings by category
@@ -77,16 +53,11 @@ export const dashboardAPI = {
 
     const data = await response.json();
 
-    if (data.data && data.data.listingsByCategory) {
-      return data.data.listingsByCategory;
-    } else if (data.listingsByCategory) {
-      return data.listingsByCategory;
-    } else if (data.data && data.data.analytics && data.data.analytics.charts) {
-      return data.data.analytics.charts.listingsByCategory || [];
-    } else {
-      // Default to empty array if no matching structure found
-      return [];
+    if (data.analytics && data.analytics.charts) {
+      return data.analytics.charts.listingsByCategory || [];
     }
+
+    return [];
   },
 
   // Get campus activity
@@ -96,16 +67,11 @@ export const dashboardAPI = {
 
     const data = await response.json();
 
-    if (data.data && data.data.campusActivity) {
-      return data.data.campusActivity;
-    } else if (data.campusActivity) {
-      return data.campusActivity;
-    } else if (data.data && data.data.analytics && data.data.analytics.charts) {
-      return data.data.analytics.charts.campusActivity || [];
-    } else {
-      // Default to empty array if no matching structure found
-      return [];
+    if (data.analytics && data.analytics.charts) {
+      return data.analytics.charts.campusActivity || [];
     }
+    
+    return [];
   },
 
   // Get scam reports trend
@@ -115,15 +81,10 @@ export const dashboardAPI = {
 
     const data = await response.json();
 
-    if (data.data && data.data.scamReportsTrend) {
-      return data.data.scamReportsTrend;
-    } else if (data.scamReportsTrend) {
-      return data.scamReportsTrend;
-    } else if (data.data && data.data.analytics && data.data.analytics.charts) {
-      return data.data.analytics.charts.scamReportsTrend || [];
-    } else {
-      // Default to empty array if no matching structure found
-      return [];
+    if (data.analytics && data.analytics.charts) {
+      return data.analytics.charts.scamReportsTrend || [];
     }
+
+    return [];
   },
 };

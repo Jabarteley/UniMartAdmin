@@ -201,8 +201,8 @@ const ContentManagement: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {banners.map((banner) => (
-                <div key={banner.id} className="bg-white overflow-hidden shadow rounded-lg">
+              {banners.map((banner, index) => (
+                <div key={banner.id || `banner-${index}`} className="bg-white overflow-hidden shadow rounded-lg">
                   <div className="px-4 py-5 sm:p-6">
                     {banner.imageUrl && (
                       <div className="mb-4">
@@ -251,8 +251,8 @@ const ContentManagement: React.FC = () => {
           <div className="mt-6">
             <h3 className="text-lg font-medium text-gray-900 mb-6">Home Page Content</h3>
             <div className="grid grid-cols-1 gap-6">
-              {homePageContent.map((content) => (
-                <div key={content.id} className="bg-white shadow overflow-hidden rounded-md p-6">
+              {homePageContent.map((content, index) => (
+                <div key={content.id || `content-${index}`} className="bg-white shadow overflow-hidden rounded-md p-6">
                   <div className="flex justify-between">
                     <h4 className="text-md font-medium text-gray-900 capitalize">{content.section.replace('-', ' ')}</h4>
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${

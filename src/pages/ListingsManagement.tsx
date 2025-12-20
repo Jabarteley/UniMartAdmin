@@ -338,8 +338,8 @@ const ListingsManagement: React.FC = () => {
                       onChange={(e) => setFilterCategory(e.target.value)}
                     >
                       <option value="all">All Categories</option>
-                      {categories.map(category => (
-                        <option key={category.id} value={category.name}>
+                      {categories.map((category, index) => (
+                        <option key={category.id || `option-${index}`} value={category.name}>
                           {category.name}
                         </option>
                       ))}
@@ -443,8 +443,8 @@ const ListingsManagement: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredListings.map((listing) => (
-                    <tr key={listing.id}>
+                  {filteredListings.map((listing, index) => (
+                    <tr key={listing.id || `listing-${index}`}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
                           <div className="text-sm font-medium text-gray-900">{listing.title}</div>
@@ -749,8 +749,8 @@ const ListingsManagement: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {categories.map((category) => (
-                    <tr key={category.id}>
+                  {categories.map((category, index) => (
+                    <tr key={category.id || `category-${index}`}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">{category.name}</div>
                       </td>

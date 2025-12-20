@@ -288,8 +288,8 @@ const VerificationManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredRequests.map((request) => (
-                <tr key={request.id}>
+              {filteredRequests.map((request, index) => (
+                <tr key={request.id || `request-${index}`}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-gray-900">{request.name}</div>

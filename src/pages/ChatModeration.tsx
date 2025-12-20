@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useWebSocket } from '../context/WebSocketContext';
 import MainLayout from '../components/MainLayout';
 import { chatAPI } from '../services/chatService';
 import { Chat, Message } from '../types';
@@ -21,6 +22,7 @@ interface ReportedChat {
 
 const ChatModeration: React.FC = () => {
   const { adminUser } = useAuth();
+  const { isConnected, subscribe, unsubscribe } = useWebSocket();
   const [reportedChats, setReportedChats] = useState<ReportedChat[]>([]);
   const [filteredChats, setFilteredChats] = useState<ReportedChat[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,19 +48,18 @@ const ChatModeration: React.FC = () => {
         limit: 10
       };
 
-      // Note: In a real implementation, we would have an API call for reported chats
-      // const response = await chatAPI.getReportedChats(filters);
-      // if (response && response.data) {
-      //   setReportedChats(response.data);
-      //   setFilteredChats(response.data);
-      //   setTotalChats(response.total || 0);
-      //   setTotalPages(response.pages || 1);
-      // } else {
-      setReportedChats([]);
-      setFilteredChats([]);
-      setTotalChats(0);
-      setTotalPages(1);
-      // }
+      const response = await chatAPI.getReportedChats(filters);
+      if (response && response.data) {
+        setReportedChats(response.data);
+        setFilteredChats(response.data);
+        setTotalChats(response.total || 0);
+        setTotalPages(response.pages || 1);
+      } else {
+        setReportedChats([]);
+        setFilteredChats([]);
+        setTotalChats(0);
+        setTotalPages(1);
+      }
     } catch (error) {
       console.error('Error fetching reported chats:', error);
     } finally {
@@ -69,6 +70,29 @@ const ChatModeration: React.FC = () => {
   useEffect(() => {
     fetchReportedChats();
   }, [searchTerm, filterStatus, currentPage]);
+
+  // Set up real-time updates via WebSocket
+  useEffect(() => {
+    const handleNewMessage = (data: any) => {
+      // Refresh the reported chats list when new messages come in
+      fetchReportedChats();
+    };
+
+    const handleNewReport = (data: any) => {
+      // Add the new report to the list or refresh the list
+      fetchReportedChats();
+    };
+
+    // Subscribe to WebSocket events
+    subscribe('new-message', handleNewMessage);
+    subscribe('new-report', handleNewReport);
+
+    // Clean up subscriptions
+    return () => {
+      unsubscribe('new-message', handleNewMessage);
+      unsubscribe('new-report', handleNewReport);
+    };
+  }, []);
 
   // Apply filters
   useEffect(() => {
@@ -289,8 +313,8 @@ const ChatModeration: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredChats.map((chat) => (
-                <tr key={chat.id}>
+              {filteredChats.map((chat, index) => (
+                <tr key={chat.id || `chat-${index}`}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-gray-900">Chat ID: {chat.chatId}</div>
@@ -406,7 +430,7 @@ const ChatModeration: React.FC = () => {
                     const pageNum = Math.min(totalPages, Math.max(1, currentPage - 2)) + i;
                     return (
                       <button
-                        key={pageNum}
+                        key={`page-${pageNum}-${i}`}
                         onClick={() => setCurrentPage(pageNum)}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           currentPage === pageNum
@@ -483,9 +507,9 @@ const ChatModeration: React.FC = () => {
                       <div className="mt-4">
                         <h4 className="text-md font-medium text-gray-900 mb-2">Messages</h4>
                         <div className="border border-gray-200 rounded-md max-h-96 overflow-y-auto">
-                          {selectedChat.messages.map((message) => (
-                            <div 
-                              key={message.id} 
+                          {selectedChat.messages.map((message, index) => (
+                            <div
+                              key={message.id || `message-${index}`}
                               className={`p-4 border-b border-gray-200 ${
                                 message.senderId === selectedChat.buyerId ? 'bg-blue-50' : 'bg-green-50'
                               }`}

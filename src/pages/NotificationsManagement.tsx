@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useWebSocket } from '../context/WebSocketContext';
 import MainLayout from '../components/MainLayout';
 import { notificationAPI } from '../services/notificationService';
 
@@ -18,6 +19,7 @@ interface Notification {
 
 const NotificationsManagement: React.FC = () => {
   const { adminUser } = useAuth();
+  const { isConnected, subscribe, unsubscribe } = useWebSocket();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [filteredNotifications, setFilteredNotifications] = useState<Notification[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,6 +64,29 @@ const NotificationsManagement: React.FC = () => {
 
   useEffect(() => {
     fetchNotifications();
+  }, []);
+
+  // Set up real-time updates via WebSocket
+  useEffect(() => {
+    const handleNewNotification = (data: any) => {
+      // Refresh the notifications list when new notifications are created
+      fetchNotifications();
+    };
+
+    const handleNotificationSent = (data: any) => {
+      // Refresh the notifications list when a notification is sent
+      fetchNotifications();
+    };
+
+    // Subscribe to WebSocket events
+    subscribe('new-notification', handleNewNotification);
+    subscribe('notification-sent', handleNotificationSent);
+
+    // Clean up subscriptions
+    return () => {
+      unsubscribe('new-notification', handleNewNotification);
+      unsubscribe('notification-sent', handleNotificationSent);
+    };
   }, []);
 
   // Apply filters
@@ -270,8 +295,8 @@ const NotificationsManagement: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredNotifications.map((notification) => (
-                  <tr key={notification.id}>
+                {filteredNotifications.map((notification, index) => (
+                  <tr key={notification.id || `notification-${index}`}>
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900">{notification.title}</div>
                       <div className="text-sm text-gray-500 truncate max-w-xs">{notification.message}</div>

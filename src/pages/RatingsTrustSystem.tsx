@@ -397,8 +397,8 @@ const RatingsTrustSystem: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredReviews.map((review) => (
-                <tr key={review.id}>
+              {filteredReviews.map((review, index) => (
+                <tr key={review.id || `review-${index}`}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-gray-900">Review ID: {review.id}</div>
@@ -531,7 +531,7 @@ const RatingsTrustSystem: React.FC = () => {
                     const pageNum = Math.min(totalPages, Math.max(1, currentPage - 2)) + i;
                     return (
                       <button
-                        key={pageNum}
+                        key={`page-${pageNum}-${i}`}
                         onClick={() => setCurrentPage(pageNum)}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           currentPage === pageNum
